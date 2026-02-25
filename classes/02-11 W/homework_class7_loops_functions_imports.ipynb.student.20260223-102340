@@ -51,13 +51,13 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 3,
    "id": "3",
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Prediction:\n",
-    "# Explanation:\n",
+    "# Prediction: totale = -1+6+2-1+4 = 10\n",
+    "# Explanation: the loop takes each value of the list and if it is divisble by 2 we add the number to the total, otherswise we substract -1.\n",
     "\n"
    ]
   },
@@ -78,13 +78,16 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 4,
    "id": "5",
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Prediction:\n",
-    "# Explanation:\n",
+    "# Prediction: the nested loop will print values from 1 to 3 each on different lines and repeated for the number itself\n",
+    "#1\n",
+    "#22\n",
+    "#333\n",
+    "# Explanation:the outer loop iterates throug 1,2,3. The inner loop iterates trough i and each iteration it prints i (on the same line). when the inner loop is breaked print() make the next iteration printed on the next line.\n",
     "\n"
    ]
   },
@@ -106,14 +109,13 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 5,
    "id": "7",
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Prediction:\n",
-    "# Explanation:\n",
-    "\n"
+    "# Prediction: it will print all the values up to seven in different rows and then, Hit,7\n",
+    "#Explanation: the loop iterates trough 2 and 20, every time the if condition is not met it print the value of n (2,3,4,5,6). When the if condition is met, Hit, 7 is printed and the loop is breaked."
    ]
   },
   {
@@ -134,13 +136,13 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 6,
    "id": "9",
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Prediction:\n",
-    "# Explanation:\n",
+    "# Prediction: It will print 5.\n",
+    "# Explanation: the loop iterates trough the list and everytime it reassing the value of total to the max betwen itself and the iterated value of the list. Given the list, the first value will be the final value printed.\n",
     "\n"
    ]
   },
@@ -162,13 +164,13 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 7,
    "id": "11",
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Prediction:\n",
-    "# Explanation:\n",
+    "# Prediction: it will print 3\n",
+    "# Explanation: the loop iterates trough 1 and 10 and update (adding one) the value of the variable count every time i is divisible by 3.\n",
     "\n"
    ]
   },
@@ -190,14 +192,13 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 8,
    "id": "13",
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Prediction:\n",
-    "# Explanation:\n",
-    "\n"
+    "#Prediction: it will print 10, 20, 21 all on different lines. \n",
+    "#Explanation: the outer loop iterates trough 0,1,2. The inner loop same. When i and j are equal, the if condition is met and the inner loop is breaked. going back to next iteration of the outer loop. "
    ]
   },
   {
@@ -220,13 +221,13 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 9,
    "id": "15",
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Prediction:\n",
-    "# Explanation:\n",
+    "# Prediction:10,5,4,2,1. all on different lines totaling 5 iteration in total \n",
+    "# Explanation: the while loop is will continue unitl x is greater than 1. Inside the loop, x is divided by 2 (floor division) if x is divisible by 2 or is substracted by one if it is not divisible. \n",
     "\n"
    ]
   },
@@ -248,13 +249,13 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 10,
    "id": "17",
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Prediction:\n",
-    "# Explanation:\n",
+    "# Prediction: [1,20,3,40]\n",
+    "# Explanation:iterate trough the list, if value is divisble by 2, it is multiplied by 10 and list updated. list is printed when loop ends\n",
     "\n"
    ]
   },
@@ -282,13 +283,13 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 11,
    "id": "20",
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Prediction:\n",
-    "# Explanation:\n",
+    "# Prediction:341\n",
+    "# Explanation: function takes paramter (1,4,3) as values and return expression\n",
     "\n"
    ]
   },
@@ -310,13 +311,13 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 12,
    "id": "22",
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Prediction:\n",
-    "# Explanation:\n",
+    "# Prediction: 157, 159, 197\n",
+    "# Explanation:parameters with def value are both positional and keyword.\n",
     "\n"
    ]
   },
@@ -338,13 +339,13 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 13,
    "id": "24",
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Prediction:\n",
-    "# Explanation:\n",
+    "# Prediction:[1,2,3,99]\n",
+    "# Explanation: list is a mutable object, hence a passed as a parameters points in the same id of nums. \n",
     "\n"
    ]
   },
@@ -366,13 +367,13 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 14,
    "id": "26",
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Prediction:\n",
-    "# Explanation:\n",
+    "# Prediction: [1,2,3]\n",
+    "# Explanation:the list does not change in this case. when added this way nums will point to a differnt object than a. \n",
     "\n"
    ]
   },
@@ -394,13 +395,13 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 15,
    "id": "28",
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Prediction:\n",
-    "# Explanation:\n",
+    "# Prediction: 1, 1 2.\n",
+    "# Explanation:in this case the list points correctly and it is upodated in the function. \n",
     "\n"
    ]
   },
@@ -424,11 +425,18 @@
    "execution_count": null,
    "id": "30",
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "6\n"
+     ]
+    }
+   ],
    "source": [
-    "# Prediction:\n",
-    "# Explanation:\n",
-    "\n"
+    "#Prediction: it will print 6 and None on different lines.\n",
+    "#Explanation: variable result is assigned the value of the function call, which is None. In assingning the function also the print statement is exectued"
    ]
   },
   {
@@ -456,8 +464,8 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Prediction:\n",
-    "# Explanation:\n",
+    "# Prediction: invariant of total is positivity, output will be 6\n",
+    "# Explanation:iterate trough the list if values are positive they are added to the total.\n",
     "\n"
    ]
   },
@@ -490,8 +498,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Explanation:\n",
-    "\n"
+    "# Explanation: line 1 and 3. to important packages dot is used\n"
    ]
   },
   {
@@ -510,7 +517,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Explanation:\n",
+    "# Explanation: it tells the interprepret to look inside the current working directory for the module to import\n",
     "\n"
    ]
   },
@@ -541,7 +548,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Explanation:\n",
+    "# Explanation: src is the working directory\n",
     "\n"
    ]
   },
@@ -564,8 +571,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Explanation:\n",
-    "\n"
+    "# Explanation: because it is telling the function to look for modules instead packages.\n"
    ]
   },
   {
@@ -584,7 +590,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Explanation:\n",
+    "# Explanation: notebook are not file attributes. Becuase of that notebook do not use Path(__file_) but Path.cwd() to know where they are. \n",
     "\n"
    ]
   }
@@ -596,7 +602,15 @@
    "name": "python3"
   },
   "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
    "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
    "version": "3.13.9"
   }
  },
