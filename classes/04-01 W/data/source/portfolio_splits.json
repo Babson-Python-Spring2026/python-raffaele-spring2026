@@ -1,0 +1,10 @@
+{
+  "splits": [
+    {
+      "date": "2025-11-17",
+      "ticker": "NFLX",
+      "new_shares": 10,
+      "old_shares": 1
+    }
+  ]
+}
