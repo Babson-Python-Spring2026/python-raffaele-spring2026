@@ -1,0 +1,287 @@
+LAB 04 - AI CONVERSATION TRANSCRIPT
+Reverse Engineering game_obfuscated.pyc
+Student: Riccardo Dell'Anna Misurale
+
+The session is broken into three phases:
+  Phase 1 - behavioral observation
+  Phase 2 - bytecode inspection and naming
+  Phase 3 - reconstruction and verification
+
+================================================================
+PHASE 1 - BEHAVIORAL OBSERVATION
+================================================================
+
+USER: For the rest of this conversation, prefix every one of my
+messages with "USER:" and every one of your responses with "AGENT:".
+I am working on Lab 04. I have a file game_obfuscated.pyc and a
+loader run_game.py that just does `import game_obfuscated`. I do not
+want you to write code until we understand the program from the
+outside first.
+
+AGENT: Understood. The classical first move is to treat the program
+as a black box: run it, take notes on every prompt, every output,
+every error state. What did you see when you ran it?
+
+USER: I ran it and it asked "Board height (2 - 10) : ". When I
+typed a non-integer it kept asking "You must enter an integer
+(2 - 10) : ". Then it asked for width and for "How many mines
+(less then 9) : " for a 3x3 board.
+
+AGENT: That strongly narrows the space:
+
+  - The 2..10 bounds on both dimensions tell you the board is
+    small and rectangular, not square-only.
+  - "less then 9" for a 3x3 is exactly H*W - 1 + 1 = 9, which
+    is the same as "strictly less than H*W" i.e. at least one
+    cell is always not a mine. This is a hallmark of
+    **Minesweeper** and essentially rules out Battleship,
+    Lights Out, and Connect Four.
+  - Once you know "this is Minesweeper", every later observation
+    should be predicted and then confirmed.
+
+Can you play one round and describe what you see AFTER the
+setup phase?
+
+USER: After setup I got a prompt "How many over would you like to
+dig? :" and then "How many down would you like to dig? :". So the
+game asks for X and Y separately, X first. It then redraws the
+board. The hidden cells show a diamond character. When I picked a
+cell and there were no neighboring mines it flood-filled a whole
+empty region plus the adjacent numbered cells.
+
+AGENT: Good. Confirmed predictions:
+  - (col, row) input order - that is unusual. Most hobby
+    Minesweeper clones ask for row first. Note this explicitly
+    so your reconstruction uses col first too.
+  - Flood fill on zero-count cells. Classic.
+  - Numbered cells stop the flood and stay visible.
+  - Diamond glyph for hidden cells. It is not the ASCII 'v'
+    you might have guessed - it is the Unicode diamond.
+
+New predictions for you to verify: the game should say
+"Congratulations! You won." on win, and a loss should either show
+all mines or at least the one you hit. Can you confirm?
+
+USER: Yes to both. I confirmed the win message exactly
+"Congratulations! You won." On a loss it prints
+"Uh Oh, you hit a mine, You Lost..." and shows the board with a
+bomb emoji where the mines are.
+
+AGENT: Great. You should also check whether the game handles three
+error cases specifically:
+  1. Out-of-range coordinates (like col=99 on a 3x3).
+  2. Already-revealed cell.
+  3. Non-integer input at the dig prompt.
+
+USER: Checked. Out-of-range coordinates prompt
+"please enter an integer between 0 and <max>". Already-revealed
+prints "That cell already exposed! Try again" and re-prompts.
+Non-integer seems to go to the same "please enter an integer"
+retry.
+
+================================================================
+PHASE 2 - BYTECODE INSPECTION
+================================================================
+
+USER: Now I want to confirm my guesses against the actual bytecode.
+Please explain how to disassemble a .pyc file in Python without
+running it.
+
+AGENT: The .pyc format is: 16-byte header, then a marshalled code
+object. So:
+
+    import marshal
+    with open('game_obfuscated.pyc', 'rb') as f:
+        f.read(16)                # skip header
+        top = marshal.load(f)
+    import dis
+    dis.dis(top)
+
+Importantly, `dis.dis(top)` recurses into every code object nested
+inside `top.co_consts`, so you see the bytecode for every function
+the module defines, even if those functions have meaningless names
+like `_5`, `_6`, `_c` after obfuscation.
+
+But disassembly can be noisy. A more targeted move: walk the code
+objects and print, for each one, the tuple of co_names (globals and
+attributes it touches) and the string/int constants in co_consts.
+That gives you a skeleton of what each function does without
+reading a single bytecode instruction.
+
+USER: I did that. Here is what I see:
+
+  _5:  touches os, platform, system; constants 'Windows','cls','clear'
+  _6:  touches _0, _2, _3, _1, print; constants include the diamond,
+       "- - -", "💣", " | "
+  _c:  touches _2, _3; takes 2 args (_d, _e); constants [0]
+  _f:  touches _c, _1; constant '💣'; takes 2 args
+  _10: touches random, _4, randrange, _2, _3, _1; constants include '💣'
+  _11: touches _2, _3, _f, _c, _1; constants [0,1,2]
+  _14: touches _2, _3, _0, _4; constant diamond
+  _15: touches _1; takes 2 args; constant '💣'
+  _16: input prompts ("Board height (2-10)", etc); uses _2,_3,_4,_6
+  _18: touches _1, len, pop, _0, _c, _f, _14, _6, print, exit;
+       takes 2 args; "Congratulations! You won."
+  _1e: main entry; uses _5, _16, _10, _11, _2, _3, _15, _6, _0, _18;
+       "How many over would you like to dig?", "Uh Oh you hit a mine..."
+
+AGENT: Excellent - this is enough to name every function. Going
+through them:
+
+  _5  = clear_screen.
+        Only names: os, platform, system. The constants
+        'Windows'/'cls'/'clear' are the Windows vs. Unix switch.
+
+  _0  = revealed board (module-level list). The fact that _6 reads
+        _0 (for display) and _18 writes to it (during flood fill) is
+        the giveaway.
+
+  _1  = mines list. _f (is_mine check) and _10 (place mines) both
+        touch it.
+
+  _2, _3 = board height and width. Set inside _16 (the input
+        function).
+
+  _4  = number of mines. Also set by _16.
+
+  _6  = display_board. The "| v |" cell template, the "- - -"
+        horizontal rule and the diamond character prove it.
+
+  _c(d, e)  = in_bounds(row, col). It only touches _2 and _3 and
+        takes two arguments - that is the geometry check.
+
+  _f(d, e)  = is_mine. It calls _c first (bounds check) then tests
+        (d, e) against _1 (the mines list).
+
+  _10       = place_mines. Uses random.randrange with _2 and _3,
+        writes into _1, stops when enough mines have been placed.
+
+  _11       = compute_neighbor_counts, or alternatively this is the
+        neighbor-counting subroutine used inside flood fill.
+
+  _14       = win_check. Reads _0 and _4 - so it's counting hidden
+        cells and comparing to _4 (num mines).
+
+  _15(d, e) = helper that looks up whether (d, e) is in _1 (the
+        mines list). Probably a simple membership test used by the
+        main loop to detect "you lost".
+
+  _16       = get_board_settings. Has every prompt string from
+        height/width/mines setup.
+
+  _18       = dig_with_flood_fill. Contains the recursion target
+        and the "Congratulations! You won." message. `len` and
+        `pop` hints at a stack-based flood fill implementation
+        (rather than recursion).
+
+  _1e       = main loop. Calls everything in the right order and
+        contains the dig prompts and the lose message.
+
+Now you have a semantically named program and you did not actually
+need to read raw bytecode.
+
+================================================================
+PHASE 3 - RECONSTRUCTION AND VERIFICATION
+================================================================
+
+USER: OK, I want to write the reconstruction myself. Give me the
+skeleton of minesweeper.py in pseudocode so I can turn it into
+Python. No actual Python yet.
+
+AGENT: Skeleton:
+
+  STATE (module globals or passed around)
+    height, width, num_mines
+    mines : set of (row, col)
+    revealed : 2d list initialized to HIDDEN ('v' or diamond)
+
+  FUNCTIONS
+    clear_screen()
+    get_board_settings() -> (h, w, m)       [prompts + clamp]
+    place_mines(h, w, m) -> set             [random.randrange loop]
+    in_bounds(r, c, h, w) -> bool
+    is_mine(r, c, mines) -> bool
+    count_neighbors(r, c, h, w, mines) -> int
+    display_board(revealed, h, w, reveal_all=False, mines=None)
+    dig(r, c, revealed, mines, h, w) -> hit_mine: bool
+        if not in_bounds or already revealed: return
+        if is_mine: revealed[r][c] = MINE; return True
+        n = count_neighbors(...)
+        revealed[r][c] = ' ' if n == 0 else str(n)
+        if n == 0:
+            for dr in (-1,0,1):
+                for dc in (-1,0,1):
+                    if (dr, dc) == (0, 0): continue
+                    dig(r+dr, c+dc, ...)
+        return False
+    has_won(revealed, h, w, num_mines) -> bool
+    main():
+        clear_screen()
+        h, w, m = get_board_settings()
+        mines = place_mines(h, w, m)
+        revealed = [[HIDDEN]*w for _ in range(h)]
+        while True:
+            display_board(...)
+            col = prompt_int(0, w-1, "How many over...")
+            row = prompt_int(0, h-1, "How many down...")
+            if revealed[row][col] is already revealed:
+                print "That cell already exposed! Try again"
+                continue
+            if dig(...):  # hit a mine
+                display_board(reveal_all=True)
+                print "Uh Oh, you hit a mine, You Lost..."
+                return
+            if has_won(...):
+                display_board()
+                print "Congratulations! You won."
+                return
+
+USER: I'll implement it. One question: how should the display code
+handle the fact that hidden cells were actually 'v' in the raw grid
+but rendered as diamonds on screen?
+
+AGENT: Separate the two. Store 'v' (or any single-character sentinel)
+in the grid for "hidden", and substitute the diamond glyph only at
+print time. This keeps the game logic glyph-free. The fact that
+count_neighbors has to test "is this cell hidden?" is much cleaner
+when the sentinel is an ASCII char.
+
+USER: Done. One last thing: how do I test it without having to
+play manually?
+
+AGENT: Two tricks:
+
+  1. random.seed(N) at the top of your test, so mine placement is
+     deterministic. Pick a small N that you've verified by hand.
+
+  2. Feed stdin from an io.StringIO with a precomputed sequence of
+     height, width, mines, then (col, row) pairs until you expect to
+     win. Redirect sys.stdin to that before calling main(). You will
+     get the whole sequence printed and you can eyeball it against
+     what the obfuscated game does with the same seed.
+
+USER: I did random.seed(42) with 3x3 / 1 mine and fed inputs
+(1,1), (0,0), (2,2). It printed the same "Congratulations!" message
+and the same board shape. Reconstruction verified.
+
+AGENT: Good. One thing to note in your write-up: the seeds will not
+produce the same mine locations in your reconstruction as in the
+obfuscated game, because the obfuscated game may call randrange in
+a different order than you do. What you ARE verifying is that your
+reconstruction's *behavior* matches - correct prompts, correct
+flood fill, correct win/loss transitions, correct error messages.
+That is the right bar for this assignment.
+
+USER: Agreed. Thanks.
+
+================================================================
+END OF TRANSCRIPT
+================================================================
+
+Post-check (required by the lab instructions):
+  [x] Each of my prompts begins with USER:
+  [x] Each AI response begins with AGENT:
+  [x] The conversation is in the correct order
+  [x] No large sections are missing
+  [x] The transcript shows the intellectual move from behavioral
+      observation -> bytecode inspection -> reconstruction
