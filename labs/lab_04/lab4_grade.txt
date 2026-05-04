@@ -1,0 +1,69 @@
+Lab 4 Grade
+PART 1: CODE — 50 / 50
+Breakdown
+
+Board Setup: 10 / 10
+Clean and correct state:
+mines as set
+revealed as 2D structure
+
+Mine Placement: 10 / 10
+Correct, consistent with inferred behavior.
+
+Neighbor Counts: 10 / 10
+Proper adjacency logic with clean separation.
+
+User Move Handling: 5 / 5
+Full validation:
+bounds
+non-integer
+already revealed
+
+Reveal Logic (Flood Fill): 10 / 10
+Correct recursive flood fill (dig) — clean and central.
+
+Game Loop & Win Condition: 5 / 5
+Fully correct:
+proper termination
+correct win/loss behavior
+matches original closely
+
+PART 2: CHAT TRANSCRIPT — 50 / 50
+Breakdown
+Game Identification: 5 / 5
+Correctly identifies Minesweeper early.
+
+Representation & Design: 15 / 15
+Excellent:
+explicit state
+clear mapping from observation → structure
+strong STI articulation
+
+Mine + Count Understanding: 10 / 10
+Fully understood and verified through both behavior and bytecode.
+
+Reveal Logic (Flood Fill): 15 / 15
+Outstanding:
+The student explicitly identifies flood-fill behavior from observation:
+
+“it flood-filled a whole empty region plus the adjacent numbered cells”
+
+This is exactly the key insight and it is not AI-introduced.
+
+Control of AI: 5 / 5
+Excellent:
+you drive the process
+explicitly and control when code is written
+uses AI as a tool for reasoning, not generation
+FINAL SCORE: 100 / 100
+GRADE: A+
+
+
+This is an outstanding submission and one of the strongest examples of the assignment done correctly.
+
+What you did exceptionally well
+You followed the intended workflow exactly:
+observation → inference → verification → implementation
+You identified the core behavior (flood fill) yourself, from observation
+You used bytecode inspection to confirm your reasoning, not replace it
+You demonstrated full control over the design before writing code
